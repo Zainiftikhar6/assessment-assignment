@@ -44,7 +44,7 @@ public class FlightController {
     }
 
     @PutMapping("/flightBooking/{flightId}")
-    public String BookFlightSeats(@PathVariable Long flightId, @PathVariable Long userId, @PathVariable String noOfSeats
+    public String BookFlightSeats(@PathVariable Long flightId, @RequestParam Long userId, @RequestParam String noOfSeats
                                   ) throws Exception {
         flightBookingService.bookFlight(flightId, userId, noOfSeats);
         return "Flight has been successfully booked :: " + flightId;

@@ -1,8 +1,10 @@
 package com.assignment.demo.service.impl;
 
+import com.assignment.demo.dao.FlightBookingDao;
 import com.assignment.demo.dao.FlightDao;
 import com.assignment.demo.dao.UserDao;
 import com.assignment.demo.model.Flight;
+import com.assignment.demo.model.FlightBooking;
 import com.assignment.demo.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,15 +16,13 @@ import java.util.Optional;
 @Service
 public class FlightBookingService {
 	private final static Logger LOG = LoggerFactory.getLogger(FlightBookingService.class);
-
+	@Autowired
 	private FlightDao flightRepo;
+	@Autowired
 	private UserDao userRepo;
 
 	@Autowired
-	public FlightBookingService(FlightDao courseRepository) {
-		this.flightRepo = flightRepo;
-	}
-
+	private FlightBookingDao flightBookingRepo;
 
 	public void bookFlight(Long flightId, Long userId, String noOfSeats) throws Exception {
 		Optional<Flight> flights = flightRepo.findById(flightId);
@@ -38,10 +38,15 @@ public class FlightBookingService {
 		if(flight.getMaxCapacity() < 0){
 			throw new Exception("Failed to book a flight. There is no capacity in this: " + flightId);
 		}
-
-		//users.addAll(flight.getId());
-		//flight.setUsers(users);
+		flight.setMaxCapacity(flight.getMaxCapacity()- Long.valueOf(noOfSeats));
 		flightRepo.save(flight);
+
+		FlightBooking flightBooking=new FlightBooking();
+		flightBooking.setFlightId(flight.getId());
+		flightBooking.setFlightNumber(flight.getFlightNumber());
+		flightBooking.setUserId(userId);
+		flightBookingRepo.save(flightBooking);
+
 	}
 
 	public Iterable<Flight> getAllAvailableFlights() {
